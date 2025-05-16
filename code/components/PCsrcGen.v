@@ -1,0 +1,19 @@
+// PCsrc generator
+
+module PCsrcGen(
+
+input[2:0] funct3,
+input Branch,Zero,alusign,Jump,
+input [31:0] A,B,
+output PCSrc
+);
+
+ assign PCSrc =(funct3 == 3'b000) ? ((Branch & Zero) | Jump) : //((Branch & ~Zero) | Jump):// beq
+               (funct3 == 3'b001) ? ((Branch & ~Zero) | Jump) : // bne
+               (funct3 == 3'b100) ? ((Branch & alusign) | Jump) : // blt
+               (funct3 == 3'b101) ? ((Branch & (~alusign | Zero)) | Jump): // bge
+               (funct3 == 3'b110) ? ((Branch & ({1'b0,A[30:0]} < {1'b0,B[30:0]})) | Jump) : // bltu
+               (funct3 == 3'b111) ? ((Branch & ({1'b0,A[30:0]} >= {1'b0,B[30:0]})) | Jump):1'b0 // bgeu
+               ; // Default case 0
+
+endmodule
